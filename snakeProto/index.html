@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Prototype</title>
+    <script src="snake_game.js"></script>
+</head>
+
+<body>
+    <span id="hpbar"></span>
+    <canvas tabindex="0" id="canvas" width="400" height="400"></canvas><br>
+    <button id="up">↑</button><br>
+    <button id="left">←</button>
+    <button id="down">↓</button>
+    <button id="right">→</button>
+    <script>
+        const logic = new GameLogic(20, 20, 3, false, 20000, 1, 30);
+        var state = logic.start();
+        var surface = document.getElementById("canvas");
+        var ctx = surface.getContext("2d");
+        surface.addEventListener(
+            "keydown",
+            (event) => {
+                var e = event.key.toLowerCase();
+                if (e === "w" || e === "arrowup") {
+                    state = inputUp(state);
+                }
+                if (e === "s" || e === "arrowdown") {
+                    state = inputDown(state);
+                }
+                if (e === "d" || e === "arrowright") {
+                    state = inputRight(state);
+                }
+                if (e === "a" || e === "arrowleft") {
+                    state = inputLeft(state);
+                }
+            },
+            false
+            );
+
+        var lastNow;
+        var deltaMsSum = 0;
+        function animate(now){
+            let deltaMs = now - lastNow;
+            lastNow = now;
+            deltaMsSum += deltaMs;
+            //if(!snake.goFaster && deltaMsSum < 110){
+
+           // }
+            //else {
+            if (deltaMsSum > 200) {
+                deltaMsSum = 0;
+                //snake.goFaster = false;
+                state = logic.next(state);
+                document.getElementById("hpbar").textContent = state.health;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "red";
+                for (let i = 0; i < state.snake.length - 1; i++) {
+                    //ctx.drawImage(img, snake[i][0], snake[i][1], part, part);
+                    ctx.fillRect(state.snake[i][0] * 20, state.snake[i][1] * 20, 20, 20)
+                }
+                ctx.fillStyle = "green";
+                
+                ctx.fillRect(state.food[0] * 20, state.food[1] * 20, 20, 20)
+            }
+            requestAnimationFrame(animate);
+        }   
+        function bootstrap() {
+            lastNow = performance.now();
+            requestAnimationFrame(animate);
+        }
+        surface.onfocus = bootstrap;
+    </script>
+</body>
+</html>
