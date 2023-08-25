@@ -41,6 +41,15 @@ function createDrawFood(display, stateGetter, graphics) {
     };
 }
 
+function createBottomFitLayout(fitFunction) {
+    return function(container, item) {
+        let result = fitFunction(container, item);
+        let fitForBottomY = container.height - result.height;
+        return {offsetX: result.offsetX, offsetY: fitForBottomY, 
+            width: result.width, height: result.height};
+    }
+}
+
 class UiDrawStepConstructor {
     constructor(drawHelper, stateGetter){
         this.display = drawHelper;

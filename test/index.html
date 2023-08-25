@@ -31,12 +31,16 @@
         <div id="noise" style="background-image: url(resource/animation/basic_to_evo.gif);"></div>
         <!-- TODO top content-->
         <img id="logo" src="resource/image/LOGO.png"> 
-        <canvas id="canvas" tabindex="0" width="320" height="320" class="horizontal-centered hidden"></canvas>
-        <div id="mobile-controls" class="hidden">
-            <button id="up">↑</button><br>
-            <button id="left">←</button>
-            <button id="down">↓</button>
-            <button id="right">→</button>
+        <main>
+            <canvas id="canvas" tabindex="0" width="320" height="320" class="horizontal-centered hidden"></canvas>
+        </main>
+        <div id="lower">
+            <div id="mobile-controls" class="hidden">
+                <button id="up">↑</button><br>
+                <button id="left">←</button>
+                <button id="down">↓</button>
+                <button id="right">→</button>
+            </div>
         </div>
         <div id="start-overlay"></div>
         <div id="game-over-overlay"></div>
@@ -48,8 +52,14 @@
                 Gebruik de pijltjes toetsen om te starten en de slang te bewegen
             </span></h1>
         </div>
-        <div id="start-button" class="mobile-only"></div><!--mobile only-->
+        <div id="start-button" class="mobile-only">
+            <svg viewBox="0 0 56 56" style="stroke: #F5B42B">
+                <path d="M 27.9999 51.9063 C 41.0546 51.9063 51.9063 41.0781 51.9063 28 C 51.9063 14.9453 41.0312 4.0937 27.9765 4.0937 C 14.8983 4.0937 4.0937 14.9453 4.0937 28 C 4.0937 41.0781 14.9218 51.9063 27.9999 51.9063 Z M 23.7109 37.0469 C 22.6327 37.7031 21.4140 37.1875 21.4140 36.0625 L 21.4140 19.9375 C 21.4140 18.8594 22.7030 18.3906 23.7109 18.9766 L 36.8827 26.7812 C 37.8436 27.3437 37.8671 28.6797 36.8827 29.2656 Z"></path>
+            </svg>
+        </div><!--mobile only-->
         <div id="retry-button"></div>
+
+        <!-- Game resources -->
         <img id="snake-head" class="game-resource" src="resource/image/EMBLEM.jpg">
         <img id="snake-body" class="game-resource" src="resource/image/FOOD.png">
         <img id="game-background" class="game-resource" src="resource/image/MAIN GAMEPLAY BACKGROUND.jpg">
@@ -203,6 +213,7 @@
                 if (windowWidth < 768) // TODO magic number
                 {
                     // set background param to be bottom fill-fit
+                    backgroundParam = createBottomFitLayout(preserveAspectRatio2DFillCentered);
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
                     singleUseGameStartEvent = function(action) {

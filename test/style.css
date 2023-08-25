@@ -46,6 +46,10 @@ body {
         visibility: hidden;
         display: none;
     }
+
+    .mobile-only {
+        display: none;
+    }
 }
 
 .overlay {
@@ -75,6 +79,15 @@ body {
 #canvas {
     display: block;
     background: black;
+    border: rebeccapurple;
+    border-style: ridge;
+}
+
+#start-button {
+    max-width: 40%;
+    max-height: 40%;
+    stroke: #F5B42B;
+    fill: rgba(0,0,0,0.5);
 }
 
 button {
