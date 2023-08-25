@@ -1,13 +1,368 @@
 <!DOCTYPE html> 
-<html lang="en">
+<html lang="nl">
     <head>
         <title>Test!</title>
         <meta charset="UTF-8">
+        <meta name="description" content="Speel het spel om de geheime bonus track te luisteren">
+        <meta name="keywords" content="#IKWOONNOGSTEEDSINALMERE, punk, rap, alternative, hip-hop, kraakfeest, band, Ongecensureerd, DE LAATSTE MENS">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+        <script src="../src/snake_game.js"></script>
+        <script src="../src/game_controller.js"></script>
+        <script src="../src/presentation.js"></script>
+        <script src="../src/bridge.js"></script>
+        <script src="../src/util.js"></script>
+        <script src="../src/controls.js"></script>
+        <script>
+            const trackPath = "resource/music/";
+            const albumTracks = [
+                "Track 1",
+            ];
+            var currentSong = "Track 2"
+            const format = ".mp3";
+        </script>
         <meta name="author" content="Broeder Konijn">
         <meta name="GitHub" content="www.github.com/elwinbran">
     </head>
     <body>
-        <span>Hello World</span>
+        <div id="noise" style="background-image: url(resource/animation/basic_to_evo.gif);"></div>
+        <!-- TODO top content-->
+        <img id="logo" src="resource/image/LOGO.png"> 
+        <canvas id="canvas" tabindex="0" width="320" height="320" class="horizontal-centered hidden"></canvas>
+        <div id="mobile-controls" class="hidden">
+            <button id="up">↑</button><br>
+            <button id="left">←</button>
+            <button id="down">↓</button>
+            <button id="right">→</button>
+        </div>
+        <div id="start-overlay"></div>
+        <div id="game-over-overlay"></div>
+        <div id="win-overlay" class="hidden overlay">
+            <img src="resource/image/TREASURE.png">
+        </div>
+        <div id="explanation-overlay" class="hidden">
+            <h1><span class="horizontal-centered" style="margin-top: 25vh;position: fixed;">
+                Gebruik de pijltjes toetsen om te starten en de slang te bewegen
+            </span></h1>
+        </div>
+        <div id="start-button" class="mobile-only"></div><!--mobile only-->
+        <div id="retry-button"></div>
+        <img id="snake-head" class="game-resource" src="resource/image/EMBLEM.jpg">
+        <img id="snake-body" class="game-resource" src="resource/image/FOOD.png">
+        <img id="game-background" class="game-resource" src="resource/image/MAIN GAMEPLAY BACKGROUND.jpg">
+        <img id="food" class="game-resource" src="resource/image/FOOD3.png">
+        <audio id="reward-music" class="" preload="auto">
+            <source src="resource/database/kan-niet-ongezien-worden/TREASURE MUSIC.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="wait-loop" class="game-resource" loop preload="auto">
+            <source src="resource/music/test.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <audio id="album-song-background" class="game-resource" preload="auto"></audio>
+        <audio id="sfx-turn" class="game-resource" preload="auto">
+            <source src="resource/sfx/Pok.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="sfx-start" class="game-resource" preload="auto">
+            <source src="resource/sfx/Sound Effect.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="sfx-ate" class="game-resource" preload="auto">
+            <source src="resource/sfx/airhorn.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="sfx-lose" class="game-resource" preload="auto">
+            <source src="resource/sfx/game_over_sound.mp3" type="audio/mpeg">
+        </audio>
+    
+        <script>
+    
+            var mobileVersion;
+            function siteInit() {
+                let gameScreenSettings = {
+                    minimumTiles: 20,
+                    minimumTileSize: 24
+                };
+                let gameRules = {
+                    initialLength: 3,
+                    loop: false,
+                    startHealth: 2000000, //large number to circumvent the system
+                    hpLossPerStep: 5, 
+                    hpGainPerFood: 40
+                };
+                let healthRules = {
+                    hpLossPerSecond: 20,
+                    hpGainPerFood: 80
+                };
+                var parallelHealth = 0;
+                let getHealth = function() {
+                    return parallelHealth;
+                };
+                let setHealth = function(value) {
+                    parallelHealth = value;
+                };
+                let eatingBonus = function() {
+                    let current = getHealth();
+                    current + healthRules.hpGainPerFood;
+                    setHealth(current);
+                };
+                let windowWidth = screen.width;
+                let windowHeight = screen.height;
+                var surface = document.getElementById("canvas");
+                let setGameFocus = function() {surface.focus();};
+                var ctx = surface.getContext("2d");
+                let upButton = document.getElementById("up");
+                let leftButton = document.getElementById("left");
+                let downButton = document.getElementById("down");
+                let rightButton = document.getElementById("right");
+                let startOverlay = document.getElementById("start-overlay");
+                let gameOverOverlay = document.getElementById("game-over-overlay");
+                let retryOverlay = document.getElementById("retry-overlay");
+                let winOverlay = document.getElementById("win-overlay");
+                let explanationOverlay = document.getElementById("explanation-overlay");
+                // mobile version of that?
+                let startButton = document.getElementById("start-button");
+                let retryButton = document.getElementById("retry-button");
+                let logoButton = document.getElementById("logo");
+    
+                let snakeHeadResource = document.getElementById("snake-head");
+                let snakeBodyResource = document.getElementById("snake-body");
+                //let snakeHeadResource = document.getElementById("logo");
+                let foodResource = document.getElementById("food");
+                let backgroundPictureResource = document.getElementById("game-background");
+                let backgroundResource = {
+                    resource: backgroundPictureResource,
+                    width: backgroundPictureResource.naturalWidth,
+                    height:  backgroundPictureResource.naturalHeight
+                };
+    
+                let controls = {
+                    clickable: {up: upButton, down: downButton, left: leftButton, right: rightButton},
+                    keyElement: document, swipeArea: document}
+                
+                let waitLoopResource = document.getElementById("wait-loop");
+                let albumBackgroundSongPlayer = document.getElementById("album-song-background");
+                albumBackgroundSongPlayer.volume = 0.3;
+                let victorySongPlayer = document.getElementById("reward-music");
+                let turnSoundResource = document.getElementById("sfx-turn");
+                let ateSoundResource = document.getElementById("sfx-ate");
+                let loseSoundResource = document.getElementById("sfx-lose");
+                let startSoundResource = document.getElementById("sfx-start");
+                const waitLoopAudio = "345"; // nonsense strings that are unique
+                const backgroundAudio = "TOYUT";
+                const turnSfx = "John";
+                const ateSfx = "{}{}{}{}"
+                const startSfx = "$#%^#";
+                const loseSfx = "IK WIL ALLES"
+                const winAudio = "ROM";
+                let audioMap = new Map();
+                audioMap.set(waitLoopAudio, waitLoopResource);
+                audioMap.set(backgroundAudio, albumBackgroundSongPlayer);
+                audioMap.set(startSfx, startSoundResource);
+                audioMap.set(winAudio, victorySongPlayer);
+                audioMap.set(turnSfx, turnSoundResource);
+                audioMap.set(ateSfx, ateSoundResource);
+                audioMap.set(loseSfx, loseSoundResource);
+    
+                let startWaitingLoopMusic = audioPlayer(audioMap, waitLoopAudio);
+                let stopWaitingLoopMusic = audioPause(audioMap, waitLoopAudio);
+                let startBackgroundMusic = audioPlayer(audioMap, backgroundAudio);
+                let stopBackgroundMusic = audioPause(audioMap, backgroundAudio);
+                let backgroundMusicDuration = audioDuration(audioMap, backgroundAudio);
+                let setSpeedBackgroundMusic = audioSetPlaybackRate(audioMap, backgroundAudio);
+                let backgroundMusicEnded = audioEnded(audioMap, backgroundAudio);
+                let backgroundMusicCurrentTime = audioCurrentTime(audioMap, backgroundAudio);
+                let setBackgroundSongSource = function(value) {
+                    jQuery(albumBackgroundSongPlayer).attr("src", value);
+                    albumBackgroundSongPlayer.load();
+                };
+                let nextSongTransformation = createNextSongFunction(albumTracks);
+                let newBackgroundSongAction = function() {
+                    let newSong = nextSongTransformation(currentSong);
+                    setBackgroundSongSource(trackPath + newSong + format);
+                }
+                let startVictoryMusic = audioPlayer(audioMap, winAudio);
+    
+                let bootGameButtonElement;
+                let showCanvas = function() {
+                    surface.classList.remove("hidden");
+                };
+                let showExplanation = function() {
+                    explanationOverlay.classList.remove("hidden");
+                }
+                let hideExplanation = function() {
+                    explanationOverlay.classList.add("hidden");
+                }
+                let showWinOverlay = function() {
+                    winOverlay.classList.remove("hidden");
+                }
+                let bootSequence = [startWaitingLoopMusic, showCanvas];
+                const startGroup = "asdkjf";
+                let singleUseGameStartEvent;
+                let backgroundParam;
+                if (windowWidth < 768) // TODO magic number
+                {
+                    // set background param to be bottom fill-fit
+                    mobileVersion = true;
+                    bootGameButtonElement = startButton;
+                    singleUseGameStartEvent = function(action) {
+                        attachGroupSelfRemovingAction({domObject: upButton, event: "click"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: downButton, event: "click"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: leftButton, event: "click"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: rightButton, event: "click"}, action, startGroup);
+                        //swipe
+                        //tap
+                    };
+                }
+                else {
+                    mobileVersion = false;
+                    backgroundParam = preserveAspectRatio2DFillCentered;
+                    let hideLogo = function() {
+                        logoButton.classList.add("invisible");
+                    };
+                    bootGameButtonElement = logoButton;
+                    //bootSequence.push(fadeIn);
+                    bootSequence.push(showExplanation);
+                    //bootSequence.push(removeMobileElements);
+                   // bootSequence.push(createStartPrompt);
+                   bootSequence.push(hideLogo);
+                    singleUseGameStartEvent = function(action) {
+                        attachGroupSelfRemovingAction({domObject: document, event: "keydown"}, action, startGroup);
+                    };
+                }           
+    
+                let setupGame = function() {
+                    let reservedHeight = 0;
+                    let screenSize = {width: windowWidth, 
+                                      height: windowHeight - reservedHeight};
+                    let displaySettings = gameDimensionsInit(screenSize, gameScreenSettings);
+                    console.log(displaySettings.game.width);
+                    console.log(displaySettings.game.height);
+                    setCanvasSize(canvas, displaySettings.canvas.width, displaySettings.canvas.height);
+                    let logic = createGameLogic(displaySettings.game, gameRules);
+                    var state = logic.start();
+                    let readState = function() {
+                        return state;
+                    }
+                    let setState = function(value) {
+                        state = value;
+                    }
+                    let balancer = createHPBalancer(healthRules, displaySettings.game);
+                    let balanceHealthAction = hpWrapper(balancer, backgroundMusicDuration, setHealth);
+                    attachControls(controls, readState, setState);
+                    // attach advanced controls as well?
+                    let resetAction = createGameResetter(setState, logic);
+                    let mainStep = createGameUpdater(setState, readState, logic);
+                    let starve = createHpLoss(getHealth, setHealth, healthRules.hpLossPerSecond);
+                    let starvedLoss = createLoseCheckHp(getHealth, readState);
+    
+                    let loseActions = [
+                        // play lose sound
+                        audioPlayer(audioMap, loseSfx),
+                        stopBackgroundMusic,
+                        newBackgroundSongAction
+                        // show retry overlay
+                    ];
+                    let winActions = [
+                        // stop and hide game
+                        // show treasure picture (do a border?)
+                        showWinOverlay,
+                        // hide the buttons on mobile
+                        pauseGame,
+                        stopBackgroundMusic,
+                        msDelayParallelAction(startVictoryMusic, 150)
+                    ];
+                    let lost = createCompoundAction(loseActions);
+                    let checkLoseFlag = function() {return readState().loseFlag;};
+                    let conditionalStateLoss = createConditionalAction(lost, checkLoseFlag);
+                    let starveCheck = createConditionalAction(lost, starvedLoss);
+                    let loseChecks = [starveCheck, conditionalStateLoss]
+                    let checkForLoss = createCompoundAction(loseChecks);
+                    let win = createCompoundAction(winActions);
+                    let checkForWin = createConditionalAction(win, backgroundMusicEnded);
+                    let eatActions = [eatingBonus, audioPlayer(audioMap, ateSfx)]; //TODO sound
+                    let eating = createCompoundAction(eatActions);
+                    let ate = ateCheckAction(readState, eating)
+                    let turning = turnCheckAction(readState, audioPlayer(audioMap, turnSfx));
+                    let timingBasedStep = [mainStep];
+                    let gameLogicStep = [checkForWin, ate, turning, starve, checkForLoss];
+    
+                    let frameStart = createFrameStart(ctx, displaySettings.canvas.width, displaySettings.canvas.height);
+                    let boardDisplaySettings = {
+                        canvasWidth: displaySettings.canvas.width, canvasHeight: displaySettings.canvas.height,
+                        tileWidth: displaySettings.tile.x, tileHeight: displaySettings.tile.y, 
+                        offsetX: displaySettings.boardTranslate.x, offsetY: displaySettings.boardTranslate.y,
+                        fitFunction: backgroundParam};
+                    let boardDrawBridge = new BoardDisplay(ctx, boardDisplaySettings);
+                    let drawBackground = createDrawImageBackground(boardDrawBridge, backgroundResource);
+                    let drawSnake = createDrawSnake(boardDrawBridge, readState, 
+                        {head: snakeHeadResource, body: snakeBodyResource});
+                    let drawFood = createDrawFood(boardDrawBridge, readState, foodResource);
+                    let boardGraphics = [drawBackground, drawSnake, drawFood];
+                    let board = createCompoundAction(boardGraphics);
+    
+                    backgroundMusicDuration();
+                    backgroundMusicCurrentTime();
+                    let getNormalizedElapsedTime = function(){}; //TODO
+                    let getNormalzedHealth = function(){}; //TODO
+                    let uiStateFunction = function() {
+                        let currentHealth = getNormalzedHealth();
+                        let currentTime = getNormalizedElapsedTime();
+                        return {health: currentHealth, time: currentTime};
+                    }
+                    let frameDraw = function() {
+                        frameStart();
+                        //ui();
+                        board();
+                    };
+                    //gameLogicStep.push(frameDraw);
+                    gameLogicStep.push(frameStart);
+                    gameLogicStep.push(frameDraw);
+                    let nextFrameActions = gameLogicStep;
+                    let gameLoop = createCompoundAction(nextFrameActions);
+                    
+                    let loopingSteps = createGameLoopFunction(gameLoop, mainStep);
+                    let bootstrapper = createStartFunction(loopingSteps, currentMsTime);
+    
+                    let gameStartingUpActions = [
+                            setGameFocus,
+                            hideExplanation,
+                            balanceHealthAction,
+                            stopWaitingLoopMusic, 
+                            audioPlayer(audioMap, startSfx),
+                            newBackgroundSongAction,
+                            msDelayParallelAction(startBackgroundMusic, 600)
+                    ];
+                    let gameStartingUpAction = createCompoundAction(gameStartingUpActions);
+                    let gameStarts = function() {
+                        gameStartingUpAction();
+                        bootstrapper();
+                    }
+                    // TODO attach start sound
+    
+                    // attaches everything for game start to a start trigger
+                    singleUseGameStartEvent(gameStarts);
+    
+                    let retryActions = [
+                        resetAction,
+                        startBackgroundMusic,
+                        balanceHealthAction,
+                        bootstrapper
+                    ];
+                    let retryAction = createCompoundAction(retryActions);
+                    retryButton.addEventListener("click", retryAction);
+                    frameDraw();
+                }
+                bootSequence.splice(1, 0, setupGame);
+                let startFunction = function () {
+                    for (let i = 0; i < bootSequence.length; i++) {
+                        bootSequence[i]();
+                    }
+                };
+                // adding this is the final step
+                bootGameButtonElement.addEventListener("click", startFunction);
+            }
+            siteInit();
+        </script>
     </body>
-</html>
+    </html>
