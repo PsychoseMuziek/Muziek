@@ -49,10 +49,10 @@
         </div>
         <div id="explanation-overlay" class="hidden">
             <h1><span class="horizontal-centered" style="margin-top: 25vh;position: fixed;">
-                Gebruik de pijltjes toetsen om te starten en de slang te bewegen
+                Gebruik de pijltjestoetsen om te starten en de slang te bewegen
             </span></h1>
         </div>
-        <div id="start-button" class="mobile-only">
+        <div id="start-button" class="mobile-only centered">
             <svg viewBox="0 0 56 56" style="stroke: #F5B42B">
                 <path d="M 27.9999 51.9063 C 41.0546 51.9063 51.9063 41.0781 51.9063 28 C 51.9063 14.9453 41.0312 4.0937 27.9765 4.0937 C 14.8983 4.0937 4.0937 14.9453 4.0937 28 C 4.0937 41.0781 14.9218 51.9063 27.9999 51.9063 Z M 23.7109 37.0469 C 22.6327 37.7031 21.4140 37.1875 21.4140 36.0625 L 21.4140 19.9375 C 21.4140 18.8594 22.7030 18.3906 23.7109 18.9766 L 36.8827 26.7812 C 37.8436 27.3437 37.8671 28.6797 36.8827 29.2656 Z"></path>
             </svg>
@@ -91,7 +91,8 @@
             function siteInit() {
                 let gameScreenSettings = {
                     minimumTiles: 20,
-                    minimumTileSize: 24
+                    preferredTileSize: 24, //px units
+                    minimumTileSize: 20 //px units
                 };
                 let gameRules = {
                     initialLength: 3,
@@ -206,6 +207,9 @@
                 let showWinOverlay = function() {
                     winOverlay.classList.remove("hidden");
                 }
+                let hideStartButton = function() {
+                    startButton.classList.add("hidden");
+                }
                 let bootSequence = [startWaitingLoopMusic, showCanvas];
                 const startGroup = "asdkjf";
                 let singleUseGameStartEvent;
@@ -216,6 +220,7 @@
                     backgroundParam = createBottomFitLayout(preserveAspectRatio2DFillCentered);
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
+                    bootSequence.push(hideStartButton);
                     singleUseGameStartEvent = function(action) {
                         attachGroupSelfRemovingAction({domObject: upButton, event: "click"}, action, startGroup);
                         attachGroupSelfRemovingAction({domObject: downButton, event: "click"}, action, startGroup);
@@ -223,6 +228,8 @@
                         attachGroupSelfRemovingAction({domObject: rightButton, event: "click"}, action, startGroup);
                         //swipe
                         //tap
+                        attachGroupSelfRemovingAction({domObject: document, event: "touchmove"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: document, event: "touchstart"}, action, startGroup);
                     };
                 }
                 else {

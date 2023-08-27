@@ -1,4 +1,6 @@
-
+/*
+  --- code specifically for controlling the game
+*/
 function attachControls(targets, getter, setter) {
     let controlUp = function() {
         setter(inputUp(getter()));
@@ -13,13 +15,15 @@ function attachControls(targets, getter, setter) {
         setter(inputLeft(getter()));
     }
 
-    // test if exists
-    targets.clickable.up.addEventListener("click", controlUp);
-    targets.clickable.down.addEventListener("click", controlDown);
-    targets.clickable.left.addEventListener("click", controlLeft);
-    targets.clickable.right.addEventListener("click", controlRight);
-    //test if it exists
-    targets.keyElement.addEventListener("keydown", (event) => {
+    if (targets.clickable != undefined || targets.clickable != null) {
+        targets.clickable.up.addEventListener("click", controlUp);
+        targets.clickable.down.addEventListener("click", controlDown);
+        targets.clickable.left.addEventListener("click", controlLeft);
+        targets.clickable.right.addEventListener("click", controlRight);
+    }
+    
+    if (targets.keyElement != undefined || targets.keyElement != null) {
+        targets.keyElement.addEventListener("keydown", (event) => {
             var e = event.key.toLowerCase();
             if (e === "w" || e === "arrowup") {
             controlUp();
@@ -36,10 +40,15 @@ function attachControls(targets, getter, setter) {
         },
         false
         );
-    // test if it exists
-    let swipeControlsBridge = new SwipeHandler(controlUp, controlRight, controlDown, controlLeft);
-    targets.swipeArea.addEventListener("touchstart", swipeControlsBridge.handleTouchStart, false);
-    targets.swipeArea.addEventListener("touchmove", swipeControlsBridge.handleTouchMove, false);
+    }
+
+    if (targets.swipeArea != undefined || targets.swipeArea != null) {
+        let swipeControlsBridge = new SwipeHandler(controlUp, controlRight, controlDown, controlLeft);
+        let handleStart = swipeControlsBridge.handleTouchStart.bind(swipeControlsBridge);
+        let handleMove = swipeControlsBridge.handleTouchMove.bind(swipeControlsBridge);
+        targets.swipeArea.addEventListener("touchstart", handleStart, false);
+        targets.swipeArea.addEventListener("touchmove", handleMove, false);
+    }
 }
 
 var selfRemovingActions = new Map();

@@ -15,7 +15,6 @@ body {
     position: fixed;
     left: 50%;
     transform: translate(-50%, 0%);
-    /* animation for emphasis */
     filter: none;
 }
 
@@ -68,6 +67,13 @@ body {
     margin-left: auto;
 }
 
+.centered {
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .invisible {
     opacity: 0;
 }
@@ -80,7 +86,7 @@ body {
     display: block;
     background: black;
     border: rebeccapurple;
-    border-style: ridge;
+    border-bottom-style: ridge;
 }
 
 #start-button {

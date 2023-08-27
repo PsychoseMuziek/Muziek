@@ -106,47 +106,35 @@ function gameDimensionsInit(availableDimension, constants) {
     if (availableDimension.width > availableDimension.height) {
         gameHeight = constants.minimumTiles;
         tileSizeResult = Math.floor(availableDimension.height / constants.minimumTiles);
-        if (constants.minimumTileSize > tileSizeResult) {
-            tileSizeResult = constants.minimumTileSize;
+        if (constants.preferredTileSize > tileSizeResult) {
+            tileSizeResult = constants.preferredTileSize;
             gameHeight = Math.floor(availableDimension.height / tileSizeResult)
         }
         // let the height only be 3/4 of the width
-        let wiep = availableDimension.height / (3 / 4);
-        wiep = Math.ceil(wiep); // after this operation for the width
-        if (wiep > availableDimension.width) {
+        let preferredWidth = availableDimension.height / (3 / 4);
+        preferredWidth = Math.ceil(preferredWidth); // after this operation for the width
+        if (preferredWidth > availableDimension.width) {
             gameWidth = Math.floor(availableDimension.width / tileSizeResult);
         }
         else {
-            gameWidth = Math.floor(wiep / tileSizeResult);
+            gameWidth = Math.floor(preferredWidth / tileSizeResult);
         }
-
-        //tileSizeResult = tileTemp - (tileTemp % 2);
-        /*
-        canvasHeight = constants.minimumTiles * tileSizeResult;
-        let something = availableDimension.width / 4 * 3;
-        if (something > (canvasHeight * (3 / 4)) ) {
-            canvasWidth = canvasHeight * (3 / 4);
-        }
-        else {
-            canvasWidth = something;
-        }
-        // use one tile row for UI?
-        */
     }
     else {
         gameWidth = constants.minimumTiles;
+        // do a check for preferred vs minimum
         tileSizeResult = Math.floor(availableDimension.width / constants.minimumTiles);
         if (constants.minimumTileSize > tileSizeResult) {
             tileSizeResult = constants.minimumTileSize;
             gameWidth = Math.floor(availableDimension.width / tileSizeResult)
         }
-        let wiep = availableDimension.width / (3 / 4);
-        wiep = Math.ceil(wiep);
-        if (wiep > availableDimension.height) {
+        let preferredHeight = availableDimension.width / (3 / 4);
+        preferredHeight = Math.ceil(preferredHeight);
+        if (preferredHeight > availableDimension.height) {
             gameHeight = Math.floor(availableDimension.height / tileSizeResult);
         }
         else {
-            gameHeight = Math.floor(wiep / tileSizeResult);
+            gameHeight = Math.floor(preferredHeight / tileSizeResult);
         }
     }
     let canvasWidth = tileSizeResult * gameWidth;
