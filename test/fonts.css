@@ -1,0 +1,26 @@
+@font-face {
+    font-family: regular; /* tahoma for now */
+    src: url(resource/fonts/tahoma.ttf);
+}
+
+@font-face {
+    font-family: regular; /* tahoma for now */
+    src: url(resource/fonts/tahomabd.ttf);
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: heading; /* eras ITC for now */
+    src: url(resource/fonts/ERASDEMI.TTF);
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: heading; /* eras ITC for now */
+    src: url(resource/fonts/ERASBD.TTF);
+}
+
+@font-face {
+    font-family: gritty; /* elephant for now */
+    src: url(resource/fonts/ELEPHNT.TTF);
+}

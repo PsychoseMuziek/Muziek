@@ -128,7 +128,7 @@ function gameDimensionsInit(availableDimension, constants) {
             tileSizeResult = constants.minimumTileSize;
             gameWidth = Math.floor(availableDimension.width / tileSizeResult)
         }
-        let preferredHeight = availableDimension.width / (3 / 4);
+        let preferredHeight = availableDimension.height;
         preferredHeight = Math.ceil(preferredHeight);
         if (preferredHeight > availableDimension.height) {
             gameHeight = Math.floor(availableDimension.height / tileSizeResult);
