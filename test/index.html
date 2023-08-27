@@ -40,6 +40,14 @@
                 <button id="left">←</button>
                 <button id="down">↓</button>
                 <button id="right">→</button>
+            <br>
+            <div id="mobile-controls" class="hidden mobile-only horizontal-centered">
+                <button id="left" class="mobile-gamepad-button flex--auto-size">←</button>
+                <div class="flex-container--column flex--auto-size">
+                    <button id="up" class="mobile-gamepad-button">↑</button>
+                    <button id="down" class="mobile-gamepad-button">↓</button>
+                </div>
+                <button id="right" class="mobile-gamepad-button flex--auto-size">→</button>
             </div>
         </div>
         <div id="start-overlay"></div>
@@ -126,6 +134,7 @@
                 let leftButton = document.getElementById("left");
                 let downButton = document.getElementById("down");
                 let rightButton = document.getElementById("right");
+                let mobileDirectionPad = document.getElementById("mobile-controls");
                 let startOverlay = document.getElementById("start-overlay");
                 let gameOverOverlay = document.getElementById("game-over-overlay");
                 let retryOverlay = document.getElementById("retry-overlay");
@@ -210,6 +219,15 @@
                 let hideStartButton = function() {
                     startButton.classList.add("hidden");
                 }
+                let showMobileGamepad = function() {
+                    mobileDirectionPad.classList.remove("hidden");
+                }
+                let hideMobileGamepad = function() {
+                    mobileDirectionPad.classList.add("hidden");
+                }
+                let hideLogo = function() {
+                    logoButton.classList.add("hidden");
+                }
                 let bootSequence = [startWaitingLoopMusic, showCanvas];
                 const startGroup = "asdkjf";
                 let singleUseGameStartEvent;
@@ -221,6 +239,7 @@
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
                     bootSequence.push(hideStartButton);
+                    bootSequence.push(showMobileGamepad)
                     singleUseGameStartEvent = function(action) {
                         attachGroupSelfRemovingAction({domObject: upButton, event: "click"}, action, startGroup);
                         attachGroupSelfRemovingAction({domObject: downButton, event: "click"}, action, startGroup);
