@@ -274,9 +274,10 @@
                     let displaySettings = gameDimensionsInit(screenSize, gameScreenSettings);
                     console.log(displaySettings.game.width);
                     console.log(displaySettings.game.height);
-                    if (windowHeight - reservedHeight < displaySettings.canvas.height) {
-                        alert("ho!")
-                    }
+                    alert("Window: " + window.height + "variable: " + windowHeight + "cheight: " + displaySettings.canvas.height + "browcheight: " + canvas.height);
+                    //if (windowHeight - reservedHeight < displaySettings.canvas.height) {
+                    //    alert("ho!")
+                    // }
                     setCanvasSize(canvas, displaySettings.canvas.width, displaySettings.canvas.height);
                     let logic = createGameLogic(displaySettings.game, gameRules);
                     var state = logic.start();
