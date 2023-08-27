@@ -274,7 +274,9 @@
                     let displaySettings = gameDimensionsInit(screenSize, gameScreenSettings);
                     console.log(displaySettings.game.width);
                     console.log(displaySettings.game.height);
-                    alert("Window: " + window.height + "variable: " + windowHeight + "cheight: " + displaySettings.canvas.height + "browcheight: " + canvas.height);
+                    setTimeout(function(){
+                        alert("Window: " + screen.height + "variable: " + windowHeight + "cheight: " + displaySettings.canvas.height + "browcheight: " + canvas.height);
+                    }, 2000);
                     //if (windowHeight - reservedHeight < displaySettings.canvas.height) {
                     //    alert("ho!")
                     // }
