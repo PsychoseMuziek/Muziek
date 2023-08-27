@@ -222,7 +222,7 @@
                 let hideLogo = function() {
                     logoButton.classList.add("hidden");
                 }
-                let bootSequence = [startWaitingLoopMusic, showCanvas];
+                let bootSequence = [startWaitingLoopMusic, showCanvas, hideLogo];
                 const startGroup = "asdkjf";
                 let singleUseGameStartEvent;
                 let backgroundParam;
@@ -246,7 +246,7 @@
                 else {
                     mobileVersion = false;
                     backgroundParam = preserveAspectRatio2DFillCentered;
-                    let hideLogo = function() {
+                    let fadeLogo = function() {
                         logoButton.classList.add("invisible");
                     };
                     bootGameButtonElement = logoButton;
@@ -254,7 +254,6 @@
                     bootSequence.push(showExplanation);
                     //bootSequence.push(removeMobileElements);
                    // bootSequence.push(createStartPrompt);
-                   bootSequence.push(hideLogo);
                     singleUseGameStartEvent = function(action) {
                         attachGroupSelfRemovingAction({domObject: document, event: "keydown"}, action, startGroup);
                     };
