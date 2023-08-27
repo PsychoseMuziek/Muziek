@@ -122,20 +122,13 @@ function gameDimensionsInit(availableDimension, constants) {
     }
     else {
         gameWidth = constants.minimumTiles;
-        // do a check for preferred vs minimum
         tileSizeResult = Math.floor(availableDimension.width / constants.minimumTiles);
         if (constants.minimumTileSize > tileSizeResult) {
             tileSizeResult = constants.minimumTileSize;
             gameWidth = Math.floor(availableDimension.width / tileSizeResult)
         }
         let preferredHeight = availableDimension.height;
-        preferredHeight = Math.ceil(preferredHeight);
-        if (preferredHeight > availableDimension.height) {
-            gameHeight = Math.floor(availableDimension.height / tileSizeResult);
-        }
-        else {
-            gameHeight = Math.floor(preferredHeight / tileSizeResult);
-        }
+        gameHeight = Math.floor(preferredHeight / tileSizeResult);
     }
     let canvasWidth = tileSizeResult * gameWidth;
     let canvasHeight = tileSizeResult * gameHeight;

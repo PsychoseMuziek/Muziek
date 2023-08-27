@@ -233,7 +233,7 @@
                     backgroundParam = createBottomFitLayout(preserveAspectRatio2DFillCentered);
                     calculateReservedHeight = function() {
                         let result = (windowWidth/100) * 15 * 2;
-                        return result + 124;
+                        return result + 32;
                     };
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
@@ -267,9 +267,9 @@
                 }           
     
                 let setupGame = function() {
-                    let reservedHeight = calculateReservedHeight();
+                    let calculatedScreenHeight  = windowHeight - calculateReservedHeight();
                     let screenSize = {width: windowWidth, 
-                                      height: windowHeight - reservedHeight};
+                                      height: calculatedScreenHeight};
                     let displaySettings = gameDimensionsInit(screenSize, gameScreenSettings);
                     console.log(displaySettings.game.width);
                     console.log(displaySettings.game.height);
