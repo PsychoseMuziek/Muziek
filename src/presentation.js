@@ -1,8 +1,5 @@
 // All the audio/visual code
 
-var tileDraw;
-var snakeGraphic;
-
 function createDrawBoardBackground(display, graphics) {
     return function() {
         let resourceArgument = {width: graphics.width, height: graphics.height}
@@ -41,44 +38,29 @@ function createDrawFood(display, stateGetter, graphics) {
     };
 }
 
+
+
+function createDrawUiBackground(display, settings) {
+    return function() {
+
+    }
+}
+
+function createDrawMeter(display, graphics, stateGetter, settings) {
+    return function() {
+        
+        let currentValue = stateGetter();
+        display.drawIcon(graphics.icon, settings.position);
+        display.drawMeter(graphics.meter, currentValue, settings.position);
+    }
+}
+
 function createBottomFitLayout(fitFunction) {
     return function(container, item) {
         let result = fitFunction(container, item);
         let fitForBottomY = container.height - result.height;
         return {offsetX: result.offsetX, offsetY: fitForBottomY, 
             width: result.width, height: result.height};
-    }
-}
-
-class UiDrawStepConstructor {
-    constructor(drawHelper, stateGetter){
-        this.display = drawHelper;
-        this.stateGetter = stateGetter;
-        // not the game state right now, but unique object for duration and p-health
-    }
-
-    background(graphics) {
-        return function() {
-            this.display.fill(graphics.resource, graphics.width, graphics.height);
-        };
-    }
-
-    health(graphics) { 
-        return function() {
-            this.display;
-            graphics.fullHealthColor
-            , emptyHealthColor
-            graphics.icon
-        };
-    }
-
-    timer(graphics) {
-        return function() {
-            this.display;
-            graphics.fullHealthColor
-            , emptyHealthColor
-            graphics.icon
-        };
     }
 }
 

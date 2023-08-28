@@ -101,6 +101,17 @@ function createGameLoopFunction(gameLoop, timeStep) {
     return reflectiveFunctionReference;
 }
 
+function gameUiDimensionsInit(availableDimension, constants) {
+    let result = 50;
+    if (availableDimension.width > availableDimension.height) {
+        result = availableDimension.height / 20;
+    }
+    else {
+        result = availableDimension.height / 10;
+    }
+    return   {width: 0, height: result};
+}
+
 function gameDimensionsInit(availableDimension, constants) {
     let tileSizeResult, gameWidth, gameHeight;
     if (availableDimension.width > availableDimension.height) {
