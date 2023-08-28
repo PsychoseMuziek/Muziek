@@ -38,20 +38,18 @@ function createDrawFood(display, stateGetter, graphics) {
     };
 }
 
-
-
 function createDrawUiBackground(display, settings) {
     return function() {
-
+        display.fill();
     }
 }
 
 function createDrawMeter(display, graphics, stateGetter, settings) {
     return function() {
-        
         let currentValue = stateGetter();
-        display.drawIcon(graphics.icon, settings.position);
-        display.drawMeter(graphics.meter, currentValue, settings.position);
+        currentValue = currentValue * settings.bar.width;
+        display.drawIcon(graphics.icon, settings.icon);
+        display.drawBar(null, settings.bar, currentValue);
     }
 }
 

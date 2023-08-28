@@ -79,6 +79,8 @@
         <img id="snake-body" class="game-resource" src="resource/image/FOOD.png">
         <img id="game-background" class="game-resource" src="resource/image/MAIN GAMEPLAY BACKGROUND.jpg">
         <img id="food" class="game-resource" src="resource/image/FOOD3.png">
+        <img id="goal-icon" class="game-resource" src="resource/image/goal.png">
+        <img id="health-icon" class="game-resource" src="resource/image/heart.png">
         <audio id="reward-music" class="" preload="auto">
             <source src="resource/database/kan-niet-ongezien-worden/TREASURE MUSIC.mp3" type="audio/mpeg">
         </audio>
@@ -156,6 +158,8 @@
                 let snakeHeadResource = document.getElementById("snake-head");
                 let snakeBodyResource = document.getElementById("snake-body");
                 let foodResource = document.getElementById("food");
+                let goalResource = document.getElementById("goal-icon");
+                let healthResource = document.getElementById("health-icon");
                 let backgroundPictureResource = document.getElementById("game-background");
                 let backgroundResource = {
                     resource: backgroundPictureResource,
@@ -291,12 +295,15 @@
                     let calculatedScreenHeight  = windowHeight - calculateReservedHeight();
                     let screenSize = {width: windowWidth, 
                                       height: calculatedScreenHeight};
-                    let uiDisplaySettings = gameUiDimensionsInit(screenSize, gameScreenSettings);
-                    screenSize.height = screenSize.height - uiDisplaySettings.height;
+                    let uiHeight = gameUiHeight(screenSize);
+                    screenSize.height = screenSize.height - uiHeight;
                     let displaySettings = gameDimensionsInit(screenSize, gameScreenSettings);
                     console.log(displaySettings.game.width);
                     console.log(displaySettings.game.height);
-                    setCanvasSize(canvas, displaySettings.canvas.width, displaySettings.canvas.height);
+                    let uiDisplaySettings = {width: displaySettings.canvas.width, height: uiHeight};
+                    let requiredCanvasDimensions = calculateCanvasSize(displaySettings.canvas, uiDisplaySettings);
+                    setCanvasSize(canvas, requiredCanvasDimensions.width, requiredCanvasDimensions.height);
+
                     let logic = createGameLogic(displaySettings.game, gameRules);
                     var state = logic.start();
                     let readState = function() {
@@ -315,22 +322,18 @@
                     let starvedLoss = createLoseCheckHp(getHealth, readState);
     
                     let loseActions = [
-                        // play lose sound
                         audioPlayer(audioMap, loseSfx),
                         stopBackgroundMusic,
                         newBackgroundSongAction,
                         showGameOverOverlay
-                        // show retry overlay
                     ];
                     let winActions = [
-                        // stop and hide game
-                        // show treasure picture (do a border?)
                         showWinOverlay,
-                        // hide the buttons on mobile
+                        hideMobileGamepad,
                         pauseGame,
                         stopBackgroundMusic,
                         audioPlayer(audioMap, winSfx),
-                        msDelayParallelAction(startVictoryMusic, 150)
+                        msDelayParallelAction(startVictoryMusic, 300)
                     ];
                     let lost = createCompoundAction(loseActions);
                     let checkLoseFlag = function() {return readState().loseFlag;};
@@ -340,19 +343,15 @@
                     let checkForLoss = createCompoundAction(loseChecks);
                     let win = createCompoundAction(winActions);
                     let checkForWin = createConditionalAction(win, backgroundMusicEnded);
-                    let eatActions = [eatingBonus, audioPlayer(audioMap, ateSfx)]; //TODO sound
+                    let eatActions = [eatingBonus, audioPlayer(audioMap, ateSfx)];
                     let eating = createCompoundAction(eatActions);
-                    let ate = ateCheckAction(readState, eating)
+                    let ate = ateCheckAction(readState, eating);
                     let turning = turnCheckAction(readState, audioPlayer(audioMap, turnSfx));
                     let timingBasedStep = [mainStep];
                     let gameLogicStep = [checkForWin, ate, turning, starve, checkForLoss];
     
                     let frameStart = createFrameStart(ctx, displaySettings.canvas.width, displaySettings.canvas.height);
-                    let boardDisplaySettings = {
-                        canvasWidth: displaySettings.canvas.width, canvasHeight: displaySettings.canvas.height,
-                        tileWidth: displaySettings.tile.x, tileHeight: displaySettings.tile.y, 
-                        offsetX: displaySettings.boardTranslate.x, offsetY: displaySettings.boardTranslate.y,
-                        fitFunction: backgroundParam};
+                    let boardDisplaySettings = boardDisplayArguments(displaySettings, uiDisplaySettings, backgroundParam);
                     let boardDrawBridge = new BoardDisplay(ctx, boardDisplaySettings);
                     let drawBackground = createDrawImageBackground(boardDrawBridge, backgroundResource);
                     let drawSnake = createDrawSnake(boardDrawBridge, readState, 
@@ -360,19 +359,40 @@
                     let drawFood = createDrawFood(boardDrawBridge, readState, foodResource);
                     let boardGraphics = [drawBackground, drawSnake, drawFood];
                     let board = createCompoundAction(boardGraphics);
-    
-                    backgroundMusicDuration();
-                    backgroundMusicCurrentTime();
-                    let getNormalizedElapsedTime = function(){}; //TODO
-                    let getNormalzedHealth = function(){}; //TODO
+
+                    let getNormalizedElapsedTime = function(){
+                        return  backgroundMusicCurrentTime() / 
+                                backgroundMusicDuration();
+                    };
+                    let getNormalzedHealth = function(){
+                        return getHealth() / 2000;
+                    }; 
                     let uiStateFunction = function() {
                         let currentHealth = getNormalzedHealth();
                         let currentTime = getNormalizedElapsedTime();
                         return {health: currentHealth, time: currentTime};
                     }
+
+                    let uiMeters = [0, 0]; // only length matters currently
+                    let uiLayout = gameUiLayoutInit(uiDisplaySettings, uiMeters);
+                    let uiDisplayArguments = {
+                        canvasWidth: uiDisplaySettings.width, 
+                        canvasHeight: uiDisplaySettings.height,
+                        offsetX: 0, offsetY: 0};
+                        
+                    let uiDrawBridge = new UiDisplay(ctx, uiDisplayArguments);
+                    let drawUiBackground = createDrawUiBackground(uiDrawBridge);
+                    let timerGraphics = {icon: goalResource};
+                    let drawTimer = createDrawMeter(uiDrawBridge, timerGraphics, 
+                        getNormalizedElapsedTime, uiLayout.meters[0]);
+                    let healthGraphics = {icon: healthResource};
+                    let drawHealth = createDrawMeter(uiDrawBridge, healthGraphics, 
+                        getNormalzedHealth, uiLayout.meters[1]);
+                    let uiGraphics = [drawUiBackground, drawTimer, drawHealth];
+                    let ui = createCompoundAction(uiGraphics);
                     let frameDraw = function() {
                         frameStart();
-                        //ui();
+                        ui();
                         board();
                     };
                     //gameLogicStep.push(frameDraw);
@@ -387,11 +407,11 @@
                     let gameStartingUpActions = [
                             setGameFocus,
                             hideExplanation,
-                            balanceHealthAction,
                             stopWaitingLoopMusic, 
                             audioPlayer(audioMap, startSfx),
                             newBackgroundSongAction,
-                            msDelayParallelAction(startBackgroundMusic, 600)
+                            msDelayParallelAction(startBackgroundMusic, 600),
+                            balanceHealthAction
                     ];
                     let gameStartingUpAction = createCompoundAction(gameStartingUpActions);
                     let gameStarts = function() {

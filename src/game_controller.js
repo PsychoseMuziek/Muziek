@@ -101,7 +101,32 @@ function createGameLoopFunction(gameLoop, timeStep) {
     return reflectiveFunctionReference;
 }
 
-function gameUiDimensionsInit(availableDimension, constants) {
+function gameUiLayoutInit(dimensions, constants) {
+    let amountOfElements = constants.length;
+    let paddingY = Math.floor(dimensions.height / 5);
+    let paddingX = 12;
+    let availableHeight = dimensions.height - paddingY;
+    let elementHeight = availableHeight / amountOfElements;
+    let iconSize = elementHeight - 1;
+    let iconXPos = paddingX;
+    let barXPos = paddingX + iconXPos + iconSize + 4; //4 spacing
+    let barWidth = dimensions.width - barXPos - paddingX;
+    let barHeight = elementHeight / 2; //thickness
+
+    let result = [];
+    for (let i = 0; i < amountOfElements; i++) {
+        let iconYPos = elementHeight * i + 1;
+        let barYPos = elementHeight * i + 1;
+        result.push({
+            icon: {x: iconXPos, y: iconYPos, size: iconSize},
+            bar: {x: barXPos, y: barYPos, width: barWidth, height: barHeight},
+        });
+    }
+    return {container: {xPadding: paddingX, yPadding: paddingY}, 
+            meters: result};
+}
+
+function gameUiHeight(availableDimension) {
     let result = 50;
     if (availableDimension.width > availableDimension.height) {
         result = availableDimension.height / 20;
@@ -109,7 +134,7 @@ function gameUiDimensionsInit(availableDimension, constants) {
     else {
         result = availableDimension.height / 10;
     }
-    return   {width: 0, height: result};
+    return result;
 }
 
 function gameDimensionsInit(availableDimension, constants) {
@@ -145,11 +170,25 @@ function gameDimensionsInit(availableDimension, constants) {
     let canvasHeight = tileSizeResult * gameHeight;
     return {
         canvas: {width: canvasWidth, height: canvasHeight},
-        //ui: [x,y, widht, heightg],
         game: {width: gameWidth, height: gameHeight},
-        tile: {x: tileSizeResult, y: tileSizeResult},
-        boardTranslate: {x: 0, y: 0}
+        tile: {x: tileSizeResult, y: tileSizeResult}
     };
+}
+
+function calculateCanvasSize(firstSection, secondSection) {
+    return {width: firstSection.width, 
+        height: secondSection.height + firstSection.height};
+}
+
+function boardDisplayArguments(boardDisplay, uiDisplay, fitAlgo) {
+    let boardOffsetX = 0;
+    let boardOffsetY = uiDisplay.height;
+    return {canvasWidth: boardDisplay.canvas.width, 
+            canvasHeight: boardDisplay.canvas.height,
+            tileWidth: boardDisplay.tile.x, 
+            tileHeight: boardDisplay.tile.y, 
+            offsetX: boardOffsetX , offsetY: boardOffsetY,
+            fitFunction: fitAlgo};
 }
 
 function createNextSongFunction(options) {

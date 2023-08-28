@@ -50,6 +50,55 @@ class BoardDisplay {
     }
 }
 
+class UiDisplay {
+    constructor(drawTarget, configuration){
+        this.context = drawTarget;
+        this.width = configuration.canvasWidth; //fixed for offset
+        this.height = configuration.canvasHeight; //fixed for offset
+        this.offsetX = configuration.offsetX;
+        this.offsetY = configuration.offsetY;
+    }
+
+    fill() {
+        const patternLength = 80;
+        this.context.save();
+        let gradient = this.context.createLinearGradient(70, 50, 50, 0);
+        gradient.addColorStop(0, "grey");
+        gradient.addColorStop(0.5, "white");
+        gradient.addColorStop(1, "grey");
+        this.context.fillStyle = gradient;
+        let iterations = Math.ceil(this.width / patternLength);
+        for (let i = 0; i < iterations; i++) {
+            this.context.fillRect(i * patternLength + this.offsetX,
+                 this.offsetY, patternLength, this.height);
+        }
+        this.context.restore();
+    }
+
+    drawMeterBackground(resource, offset) {
+
+    }
+
+    drawIcon(resource, layout) {
+        
+        this.context.drawImage(resource, 
+            layout.x + this.offsetX, layout.y + this.offsetY, 
+            layout.size, layout.size);
+        
+    }
+        
+    drawBar(resource, layout, currentSize) {
+        this.context.save();
+        this.context.fillStyle = "grey";
+        this.context.fillRect(layout.x  + this.offsetX, layout.y + this.offsetY,
+             layout.width, layout.height); // backdrop
+        this.context.fillStyle = "red";
+        this.context.fillRect(layout.x  + this.offsetX, layout.y + this.offsetY,
+             currentSize, layout.height); // filled part
+        this.context.restore();
+    }
+}
+
 function createFrameStart(drawTarget, width, height) {
     return function() {
         drawTarget.clearRect(0, 0, width, height);
