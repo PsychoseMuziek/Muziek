@@ -18,6 +18,10 @@ body {
     filter: none;
 }
 
+.desktop-only {
+    display: none;
+}
+
 @media screen and (min-width: 768px){
     #logo:hover {
         -webkit-filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.8));
@@ -49,6 +53,10 @@ body {
     .mobile-only {
         display: none;
     }
+
+    .desktop-only {
+        display: block;
+    }
 }
 
 .overlay {
@@ -56,6 +64,15 @@ body {
     height: 100vh;
     width: 100vw;
     top: 0;
+
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0.5);
+    color: #F5B42B;
+    text-shadow: 0px 0px 5px white;
 }
 
 .game-resource {
@@ -118,6 +135,7 @@ body {
     font-size: 20px;
     width: 15vw;
     height: 15vw;
+    background-color: #F5B42B;
 }
 
 #noise{

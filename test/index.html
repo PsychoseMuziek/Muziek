@@ -47,16 +47,24 @@
         </div>
         <!-- The menu's/popups -->
         <div id="explanation-overlay" class="hidden">
-            <h1><span class="horizontal-centered" style="margin-top: 25vh;position: fixed;">
-                Gebruik de pijltjestoetsen om te starten en de slang te bewegen
-            </span></h1>
+            <div class="desktop-only">
+                <h1><span class="horizontal-centered" style="margin-top: 25vh;position: fixed;">
+                    Gebruik de pijltjestoetsen om te starten en de slang te bewegen
+                </span></h1>
+            </div>
+            <div class="mobile-only">
+                <h1><span class="horizontal-centered" style="margin-top: 25vh;position: fixed;">
+                    Swipe of gebruik de knoppen om te starten en de slang te bewegen
+                </span></h1>
+            </div>
         </div>
         <div id="game-over-overlay" class="hidden overlay">
-            <h1>🥴💫😵 Stukgelopen!</h1>
+            <h1 class="centered">🥴💫😵 Stukgelopen!</h1>
 
         </div>
         <div id="retry-button"></div>
         <div id="win-overlay" class="hidden overlay">
+            <h1 class="centered" style="text-align: center;">Gewonnen!</h1>
             <img src="resource/image/TREASURE.png">
         </div>
         
@@ -64,7 +72,7 @@
             <svg viewBox="0 0 56 56" style="stroke: #F5B42B">
                 <path d="M 27.9999 51.9063 C 41.0546 51.9063 51.9063 41.0781 51.9063 28 C 51.9063 14.9453 41.0312 4.0937 27.9765 4.0937 C 14.8983 4.0937 4.0937 14.9453 4.0937 28 C 4.0937 41.0781 14.9218 51.9063 27.9999 51.9063 Z M 23.7109 37.0469 C 22.6327 37.7031 21.4140 37.1875 21.4140 36.0625 L 21.4140 19.9375 C 21.4140 18.8594 22.7030 18.3906 23.7109 18.9766 L 36.8827 26.7812 C 37.8436 27.3437 37.8671 28.6797 36.8827 29.2656 Z"></path>
             </svg>
-        </div><!--mobile only-->
+        </div>
         
         <!-- Game resources -->
         <img id="snake-head" class="game-resource" src="resource/image/EMBLEM.jpg">
@@ -90,6 +98,9 @@
         </audio>
         <audio id="sfx-lose" class="game-resource" preload="auto">
             <source src="resource/sfx/game_over_sound.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="sfx-win" class="game-resource" preload="auto">
+            <source src="resource/sfx/coin_drops.mp3" type="audio/mpeg">
         </audio>
     
         <script>
@@ -164,6 +175,7 @@
                 let ateSoundResource = document.getElementById("sfx-ate");
                 let loseSoundResource = document.getElementById("sfx-lose");
                 let startSoundResource = document.getElementById("sfx-start");
+                let winSoundResource = document.getElementById("sfx-win");
                 const waitLoopAudio = "345"; // nonsense strings that are unique
                 const backgroundAudio = "TOYUT";
                 const turnSfx = "John";
@@ -171,6 +183,7 @@
                 const startSfx = "$#%^#";
                 const loseSfx = "IK WIL ALLES"
                 const winAudio = "ROM";
+                const winSfx = "aguba";
                 let audioMap = new Map();
                 audioMap.set(waitLoopAudio, waitLoopResource);
                 audioMap.set(backgroundAudio, albumBackgroundSongPlayer);
@@ -179,6 +192,7 @@
                 audioMap.set(turnSfx, turnSoundResource);
                 audioMap.set(ateSfx, ateSoundResource);
                 audioMap.set(loseSfx, loseSoundResource);
+                audioMap.set(winSfx, winSoundResource);
     
                 let startWaitingLoopMusic = audioPlayer(audioMap, waitLoopAudio);
                 let stopWaitingLoopMusic = audioPause(audioMap, waitLoopAudio);
@@ -212,6 +226,12 @@
                 let showWinOverlay = function() {
                     winOverlay.classList.remove("hidden");
                 }
+                let showGameOverOverlay = function() {
+                    gameOverOverlay.classList.remove("hidden");
+                }
+                let hideGameOverOverlay = function() {
+                    gameOverOverlay.classList.add("hidden");
+                }
                 let hideStartButton = function() {
                     startButton.classList.add("hidden");
                 }
@@ -239,7 +259,7 @@
                     };
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
-                    bootSequence.push(hideLogo);
+                    bootSequence.push(showExplanation);
                     bootSequence.push(hideStartButton);
                     bootSequence.push(showMobileGamepad);
                     singleUseGameStartEvent = function(action) {
@@ -302,7 +322,8 @@
                         // play lose sound
                         audioPlayer(audioMap, loseSfx),
                         stopBackgroundMusic,
-                        newBackgroundSongAction
+                        newBackgroundSongAction,
+                        showGameOverOverlay
                         // show retry overlay
                     ];
                     let winActions = [
@@ -312,6 +333,7 @@
                         // hide the buttons on mobile
                         pauseGame,
                         stopBackgroundMusic,
+                        audioPlayer(audioMap, winSfx),
                         msDelayParallelAction(startVictoryMusic, 150)
                     ];
                     let lost = createCompoundAction(loseActions);
