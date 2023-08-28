@@ -234,13 +234,19 @@
                     // set background param to be bottom fill-fit
                     backgroundParam = createBottomFitLayout(preserveAspectRatio2DFillCentered);
                     calculateReservedHeight = function() {
-                        return 32;
+                        let buttonsHeight = (windowWidth / 100) * 15 * 2;
+                        return buttonsHeight + 32;
                     };
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
                     bootSequence.push(hideLogo);
                     bootSequence.push(hideStartButton);
+                    bootSequence.push(showMobileGamepad);
                     singleUseGameStartEvent = function(action) {
+                        attachGroupSelfRemovingAction({domObject: upButton, event: "click"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: downButton, event: "click"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: leftButton, event: "click"}, action, startGroup);
+                        attachGroupSelfRemovingAction({domObject: rightButton, event: "click"}, action, startGroup);
                         attachGroupSelfRemovingAction({domObject: document, event: "touchmove"}, action, startGroup);
                         attachGroupSelfRemovingAction({domObject: document, event: "touchstart"}, action, startGroup);
                     };
