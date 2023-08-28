@@ -124,7 +124,6 @@ function gameDimensionsInit(availableDimension, constants) {
         gameWidth = constants.minimumTiles;
         tileSizeResult = Math.floor(availableDimension.width / constants.minimumTiles);
         if (constants.minimumTileSize > tileSizeResult) {
-            alert("doing a thing")
             tileSizeResult = constants.minimumTileSize;
             gameWidth = Math.floor(availableDimension.width / tileSizeResult)
         }
