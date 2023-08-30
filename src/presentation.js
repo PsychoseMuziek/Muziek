@@ -101,6 +101,13 @@ function audioPlayer(audioDatabase, resourceName) {
     }
 }
 
+function audioPlayerForceStart(audioDatabase, resourceName) {
+    return function() {
+        audioDatabase.get(resourceName).currentTime = 0;
+        audioDatabase.get(resourceName).play();
+    }
+}
+
 function audioPause(audioDatabase, resourceName) {
     return function() {
         audioDatabase.get(resourceName).pause();

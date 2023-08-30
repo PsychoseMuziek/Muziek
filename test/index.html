@@ -202,6 +202,8 @@
                 let waitLoopResource = document.getElementById("wait-loop");
                 let albumBackgroundSongPlayer = document.getElementById("album-song-background");
                 albumBackgroundSongPlayer.volume = 0.3;
+                let gameOverSongPlayer = document.getElementById("game-over-loop-music");
+                gameOverSongPlayer.volume = 0.5;
                 let victorySongPlayer = document.getElementById("reward-music");
                 let turnSoundResource = document.getElementById("sfx-turn");
                 let ateSoundResource = document.getElementById("sfx-ate");
@@ -209,6 +211,7 @@
                 let startSoundResource = document.getElementById("sfx-start");
                 let winSoundResource = document.getElementById("sfx-win");
                 const waitLoopAudio = "345"; // nonsense strings that are unique
+                const gameOverAudio = "ho una psicosi";
                 const backgroundAudio = "TOYUT";
                 const turnSfx = "John";
                 const ateSfx = "{}{}{}{}"
@@ -218,6 +221,7 @@
                 const winSfx = "aguba";
                 let audioMap = new Map();
                 audioMap.set(waitLoopAudio, waitLoopResource);
+                audioMap.set(gameOverAudio, gameOverSongPlayer)
                 audioMap.set(backgroundAudio, albumBackgroundSongPlayer);
                 audioMap.set(startSfx, startSoundResource);
                 audioMap.set(winAudio, victorySongPlayer);
@@ -228,6 +232,8 @@
     
                 let startWaitingLoopMusic = audioPlayer(audioMap, waitLoopAudio);
                 let stopWaitingLoopMusic = audioPause(audioMap, waitLoopAudio);
+                let startGameOverMusic = audioPlayerForceStart(audioMap, gameOverAudio);
+                let stopGameOverMusic = audioPause(audioMap, gameOverAudio);
                 let startBackgroundMusic = audioPlayer(audioMap, backgroundAudio);
                 let stopBackgroundMusic = audioPause(audioMap, backgroundAudio);
                 let backgroundMusicDuration = audioDuration(audioMap, backgroundAudio);
@@ -355,8 +361,15 @@
                         stopBackgroundMusic,
                         pauseGame,
                         newBackgroundSongAction,
-                        showGameOverOverlay
+                        showGameOverOverlay,
+                        msDelayParallelAction(startGameOverMusic, 800)
                     ];
+                    let lost = createCompoundAction(loseActions);
+                    let checkLoseFlag = function() {return readState().loseFlag;};
+                    let conditionalStateLoss = createConditionalAction(lost, checkLoseFlag);
+                    let starveCheck = createConditionalAction(lost, starvedLoss);
+                    let loseChecks = [starveCheck, conditionalStateLoss]
+                    let checkForLoss = createCompoundAction(loseChecks);
                     let winActions = [
                         showWinOverlay,
                         hideMobileGamepad,
@@ -365,12 +378,6 @@
                         audioPlayer(audioMap, winSfx),
                         msDelayParallelAction(startVictoryMusic, 300)
                     ];
-                    let lost = createCompoundAction(loseActions);
-                    let checkLoseFlag = function() {return readState().loseFlag;};
-                    let conditionalStateLoss = createConditionalAction(lost, checkLoseFlag);
-                    let starveCheck = createConditionalAction(lost, starvedLoss);
-                    let loseChecks = [starveCheck, conditionalStateLoss]
-                    let checkForLoss = createCompoundAction(loseChecks);
                     let win = createCompoundAction(winActions);
                     let checkForWin = createConditionalAction(win, backgroundMusicEnded);
                     let eatActions = [eatingBonus, audioPlayer(audioMap, ateSfx)];
@@ -434,7 +441,6 @@
                         setHealth(newTempHealth);
                         setUpperHealthBound(newTempHealth / startHealth);
                     };
-                    debug = healthGraphics;
                     let setCorrectHealthColorBound = function() {
                         let cappy  = getHealthCapacity();
                         let newCappy = cappy + (healthRules.hpGainPerFood * 2);
@@ -491,6 +497,7 @@
     
                     let retryActions = [
                         resetAction,
+                        stopGameOverMusic,
                         hideGameOverOverlay,
                         startBackgroundMusic,
                         parallelHealthInit,
