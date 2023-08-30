@@ -350,7 +350,7 @@
                     let timingBasedStep = [mainStep];
                     let gameLogicStep = [checkForWin, ate, turning, starve, checkForLoss];
     
-                    let frameStart = createFrameStart(ctx, displaySettings.canvas.width, displaySettings.canvas.height);
+                    let frameStart = createFrameStart(ctx, requiredCanvasDimensions.width, requiredCanvasDimensions.height);
                     let boardDisplaySettings = boardDisplayArguments(displaySettings, uiDisplaySettings, backgroundParam);
                     let boardDrawBridge = new BoardDisplay(ctx, boardDisplaySettings);
                     let drawBackground = createDrawImageBackground(boardDrawBridge, backgroundResource);
