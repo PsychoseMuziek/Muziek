@@ -139,7 +139,7 @@ body {
 #game-over-overlay>img {
     max-height: 78vh;
     display: block;
-    
+    max-width: 100vw;
 }
 
 #retry-button {
