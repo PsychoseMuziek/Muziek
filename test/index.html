@@ -66,10 +66,10 @@
             </div>
         </div>
         <div id="game-over-overlay" class="hidden overlay">
-            <h1 class="centered">🥴💫😵 Stukgelopen!</h1>
-
+            <h1 style="text-align: center;">🥴💫😵 Stukgelopen!</h1>
+            <img class="horizontal-centered" src="resource/image/Album_cover_small.jpg">
+            <button id="retry-button" class="horizontal-centered">Probeer opnieuw</button>
         </div>
-        <div id="retry-button"></div>
         <div id="win-overlay" class="hidden overlay">
             <h1 class="centered" style="text-align: center;">Gewonnen!</h1>
             <img src="resource/image/TREASURE.png">
@@ -353,6 +353,7 @@
                     let loseActions = [
                         audioPlayer(audioMap, loseSfx),
                         stopBackgroundMusic,
+                        pauseGame,
                         newBackgroundSongAction,
                         showGameOverOverlay
                     ];
@@ -490,6 +491,7 @@
     
                     let retryActions = [
                         resetAction,
+                        hideGameOverOverlay,
                         startBackgroundMusic,
                         parallelHealthInit,
                         bootstrapper
