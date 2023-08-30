@@ -111,6 +111,23 @@ body {
     max-height: 40%;
     stroke: #F5B42B;
     fill: rgba(0,0,0,0.5);
+    transition: fill 300ms, opacity 300ms;
+}
+
+/* fade in (secret loading time) for the start buttons */
+.starter { 
+    opacity: 0;
+    transition: opacity 500ms;
+}
+
+@media screen and (max-width: 768px){
+    #logo.starter {
+        opacity: 1;
+    }
+}
+
+.visible {
+    opacity: 1;
 }
 
 #explanation-overlay {

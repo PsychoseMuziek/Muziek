@@ -14,6 +14,13 @@ function createDrawImageBackground(display, graphics) {
     };
 }
 
+function createDirtyLoadDrawImageBackground(display, graphics) {
+    return function() {
+        let resourceArgument = {width: graphics.width, height: graphics.height}
+        display.fitImage(graphics.getResource(), resourceArgument);
+    };
+}
+
 function createDrawSnake(display, stateGetter, graphics) {
     return function() {
         let snakeData = stateGetter().snake;
