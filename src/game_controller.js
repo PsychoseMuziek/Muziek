@@ -103,20 +103,21 @@ function createGameLoopFunction(gameLoop, timeStep) {
 
 function gameUiLayoutInit(dimensions, constants) {
     let amountOfElements = constants.length;
-    let paddingY = Math.floor(dimensions.height / 5);
+    let paddingY = Math.floor(dimensions.height / (5 * 2));
     let paddingX = 12;
     let availableHeight = dimensions.height - paddingY;
     let elementHeight = availableHeight / amountOfElements;
     let iconSize = elementHeight - 1;
     let iconXPos = paddingX;
     let barXPos = paddingX + iconXPos + iconSize + 4; //4 spacing
-    let barWidth = dimensions.width - barXPos - paddingX;
+    let barWidth = dimensions.width - barXPos - (paddingX * 2);
     let barHeight = elementHeight / 2; //thickness
+    let barToIconOffset = Math.floor((iconSize - barHeight) / 2);
 
     let result = [];
     for (let i = 0; i < amountOfElements; i++) {
-        let iconYPos = elementHeight * i + 1;
-        let barYPos = elementHeight * i + 1;
+        let iconYPos = elementHeight * i + paddingY;
+        let barYPos = elementHeight * i + paddingY + barToIconOffset;
         result.push({
             icon: {x: iconXPos, y: iconYPos, size: iconSize},
             bar: {x: barXPos, y: barYPos, width: barWidth, height: barHeight},
@@ -129,10 +130,10 @@ function gameUiLayoutInit(dimensions, constants) {
 function gameUiHeight(availableDimension) {
     let result = 50;
     if (availableDimension.width > availableDimension.height) {
-        result = availableDimension.height / 20;
+        result = Math.ceil(availableDimension.height / 18);
     }
     else {
-        result = availableDimension.height / 10;
+        result = Math.ceil(availableDimension.height / 10);
     }
     return result;
 }
@@ -237,11 +238,11 @@ function createHPBalancer(rules, size) {
     let totalSize = size.width * size.height;
     // duration in second
     return function(duration) {
-        let result = 2000;
+        let result = rules.hpCapacity();
         result = duration * (rules.hpLossPerSecond / 2);
         let excessSize = totalSize - 200;
         if (excessSize > 0) {
-            result = result - (2 * (excessSize ** 1.5));
+            result = result - (2 * ((excessSize / 100) ** 1.5));
         }
         return result;
     }
@@ -249,7 +250,7 @@ function createHPBalancer(rules, size) {
 
 function hpWrapper(transformation, getter, setter) {
     return function() {
-        let newValue = transformation(getter())
+        let newValue = transformation(getter());
         setter(newValue);
     };
 }

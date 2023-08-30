@@ -11,6 +11,7 @@
     
         <link rel="stylesheet" type="text/css" href="style.css"/>
         <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="../src/snake_game.js"></script>
         <script src="../src/game_controller.js"></script>
         <script src="../src/presentation.js"></script>
@@ -127,11 +128,19 @@
                     hpLossPerStep: 5, 
                     hpGainPerFood: 40
                 };
+                var pHealthCap = 2000;
+                let getHealthCapacity = function() {
+                    return pHealthCap;
+                };
+                let setHealthCapacity = function(value) {
+                    pHealthCap = value;
+                };
                 let healthRules = {
                     hpLossPerSecond: 20,
-                    hpGainPerFood: 80
+                    hpGainPerFood: 80,
+                    hpCapacity: getHealthCapacity
                 };
-                var parallelHealth = 0;
+                var parallelHealth = getHealthCapacity();
                 let getHealth = function() {
                     return parallelHealth;
                 };
@@ -140,9 +149,17 @@
                 };
                 let eatingBonus = function() {
                     let current = getHealth();
-                    current + healthRules.hpGainPerFood;
+                    current = current + healthRules.hpGainPerFood;
                     setHealth(current);
                 };
+                let hpSystemDelaySeconds = 1;
+                let hpSystemDelay = 1 * 1000; //s to ms
+
+                // Layout and styling settings
+                const themeColor = "#F5B42B";
+                const barInsetColor = "rgba(22, 22, 22, 0.3)";
+
+                // Retrieving HTML elements
                 let windowWidth = window.innerWidth;
                 let windowHeight = window.innerHeight;
                 var surface = document.getElementById("canvas");
@@ -320,6 +337,7 @@
                     }
                     let balancer = createHPBalancer(healthRules, displaySettings.game);
                     let balanceHealthAction = hpWrapper(balancer, backgroundMusicDuration, setHealth);
+                    let updateCapacity = hpWrapper(function(value) {return value}, getHealth, setHealthCapacity);
                     attachControls(controls, readState, setState);
                     // attach advanced controls as well?
                     let resetAction = createGameResetter(setState, logic);
@@ -370,14 +388,9 @@
                         return  backgroundMusicCurrentTime() / 
                                 backgroundMusicDuration();
                     };
-                    let getNormalzedHealth = function(){
-                        return getHealth() / 2000;
+                    let getNormalizedHealth = function(){
+                        return getHealth() / getHealthCapacity();
                     }; 
-                    let uiStateFunction = function() {
-                        let currentHealth = getNormalzedHealth();
-                        let currentTime = getNormalizedElapsedTime();
-                        return {health: currentHealth, time: currentTime};
-                    }
 
                     let uiMeters = [0, 0]; // only length matters currently
                     let uiLayout = gameUiLayoutInit(uiDisplaySettings, uiMeters);
@@ -388,13 +401,53 @@
                         
                     let uiDrawBridge = new UiDisplay(ctx, uiDisplayArguments);
                     let drawUiBackground = createDrawUiBackground(uiDrawBridge);
-                    let timerGraphics = {icon: goalResource};
+                    let timerGraphics = {icon: goalResource, 
+                        barColor: themeColor, insetColor: barInsetColor};
                     let drawTimer = createDrawMeter(uiDrawBridge, timerGraphics, 
                         getNormalizedElapsedTime, uiLayout.meters[0]);
-                    let healthGraphics = {icon: healthResource};
+                    
+                    var upperHealthBound = 1.1;
+                    let setUpperHealthBound = function(value) {
+                        upperHealthBound = value;
+                    };
+                    let getUpperHealthBound = function() {
+                        return upperHealthBound;
+                    };
+                    let healthSettings = {
+                        lowColor: "red", highColor: "green",
+                        low: function() {return 0.85;},
+                        high: getUpperHealthBound
+                    };
+                    let healthGraphics = {icon: healthResource, 
+                        barColor: healthSettings.highColor, 
+                        insetColor: barInsetColor};
+                    let tempHealthInit = function() {
+                        let newTempHealth = hpSystemDelaySeconds * healthRules.hpLossPerSecond;
+                        let startHealth = getHealth();
+                        newTempHealth = newTempHealth + startHealth
+                        setHealth(newTempHealth);
+                        setUpperHealthBound(newTempHealth / startHealth);
+                    };
+                    debug = healthGraphics;
+                    let setCorrectHealthColorBound = function() {
+                        let cappy  = getHealthCapacity();
+                        let newCappy = cappy + (healthRules.hpGainPerFood * 2);
+                        setUpperHealthBound(newCappy / cappy);
+                    };
+                    let parallelHealthInitActions = 
+                    [balanceHealthAction, updateCapacity, setCorrectHealthColorBound];
+                    let parallelHealthInit = msDelayParallelAction(
+                        createCompoundAction(parallelHealthInitActions), hpSystemDelay);
+                    let healthBarColorStep = createHealthBarColorStep(
+                        healthGraphics, getNormalizedHealth, healthSettings);
                     let drawHealth = createDrawMeter(uiDrawBridge, healthGraphics, 
-                        getNormalzedHealth, uiLayout.meters[1]);
-                    let uiGraphics = [drawUiBackground, drawTimer, drawHealth];
+                        getNormalizedHealth, uiLayout.meters[1]);
+                    let uiGraphics = [
+                        drawUiBackground, 
+                        drawTimer, 
+                        healthBarColorStep, 
+                        drawHealth
+                    ];
                     let ui = createCompoundAction(uiGraphics);
                     let frameDraw = function() {
                         frameStart();
@@ -416,8 +469,9 @@
                             stopWaitingLoopMusic, 
                             audioPlayer(audioMap, startSfx),
                             newBackgroundSongAction,
+                            tempHealthInit,
                             msDelayParallelAction(startBackgroundMusic, 600),
-                            balanceHealthAction
+                            parallelHealthInit
                     ];
                     let gameStartingUpAction = createCompoundAction(gameStartingUpActions);
                     let gameStarts = function() {
@@ -432,7 +486,7 @@
                     let retryActions = [
                         resetAction,
                         startBackgroundMusic,
-                        balanceHealthAction,
+                        parallelHealthInit,
                         bootstrapper
                     ];
                     let retryAction = createCompoundAction(retryActions);

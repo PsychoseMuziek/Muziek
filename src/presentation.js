@@ -48,8 +48,34 @@ function createDrawMeter(display, graphics, stateGetter, settings) {
     return function() {
         let currentValue = stateGetter();
         currentValue = currentValue * settings.bar.width;
+        if (currentValue > settings.bar.width) {
+            currentValue = settings.bar.width;
+        }
+        display.drawMeterBackground(graphics.insetColor, settings.bar);
         display.drawIcon(graphics.icon, settings.icon);
-        display.drawBar(null, settings.bar, currentValue);
+        display.drawBar(graphics.barColor, settings.bar, currentValue);
+    }
+}
+
+function createHealthBarColorStep(healthGraphics, getValue, settings) {
+    let colorInterpolator = d3.interpolateRgb(settings.lowColor, settings.highColor);
+    return function() {
+        let value = getValue();
+        let lowerBound = settings.low();
+        let upperBound = settings.high();
+        let result = value;
+        if (result < 0 || result < lowerBound) {
+            result = 0;
+        }
+        else {
+            if (result >= upperBound) {
+                result = 1;
+            }
+            else {
+                result = (value - lowerBound) / (upperBound - lowerBound)
+            }
+        }
+        healthGraphics.barColor = colorInterpolator(result);
     }
 }
 

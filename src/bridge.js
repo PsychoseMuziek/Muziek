@@ -75,8 +75,13 @@ class UiDisplay {
         this.context.restore();
     }
 
-    drawMeterBackground(resource, offset) {
-
+    drawMeterBackground(resource, layout) {
+        this.context.save();
+        this.context.fillStyle = resource;
+        // slightly larger than bar layout
+        this.context.fillRect(layout.x  + this.offsetX - 1, layout.y - 1 + this.offsetY,
+             layout.width + 2, layout.height + 2);
+        this.context.restore();
     }
 
     drawIcon(resource, layout) {
@@ -89,10 +94,7 @@ class UiDisplay {
         
     drawBar(resource, layout, currentSize) {
         this.context.save();
-        this.context.fillStyle = "grey";
-        this.context.fillRect(layout.x  + this.offsetX, layout.y + this.offsetY,
-             layout.width, layout.height); // backdrop
-        this.context.fillStyle = "red";
+        this.context.fillStyle = resource;
         this.context.fillRect(layout.x  + this.offsetX, layout.y + this.offsetY,
              currentSize, layout.height); // filled part
         this.context.restore();
