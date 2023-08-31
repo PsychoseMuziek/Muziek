@@ -71,8 +71,11 @@
             <button id="retry-button" class="horizontal-centered">Probeer opnieuw</button>
         </div>
         <div id="win-overlay" class="hidden overlay">
-            <h1 class="centered" style="text-align: center;">Gewonnen!</h1>
+            <h1 class="" style="text-align: center;">Gewonnen!</h1>
             <img class="horizontal-centered" src="resource/image/TREASURE.png">
+            <audio id="reward-music" style="display: block; margin-top: 16px" class="horizontal-centered" preload="auto">
+                <source src="resource/database/kan-niet-ongezien-worden/TREASURE MUSIC.mp3" type="audio/mpeg">
+            </audio>
         </div>
         
         <div id="start-button" class="mobile-only centered starter ">
@@ -89,9 +92,7 @@
         <img id="goal-icon" class="game-resource" src="resource/image/goal.png">
         <img id="health-icon" class="game-resource" src="resource/image/heart.png">
 
-        <audio id="reward-music" class="" preload="auto">
-            <source src="resource/database/kan-niet-ongezien-worden/TREASURE MUSIC.mp3" type="audio/mpeg">
-        </audio>
+        
         <audio id="wait-loop" class="game-resource" loop preload="auto">
             <source src="resource/music/test.mp3" type="audio/mpeg">
         </audio>
@@ -208,6 +209,7 @@
                 let gameOverSongPlayer = document.getElementById("game-over-loop-music");
                 gameOverSongPlayer.volume = 0.5;
                 let victorySongPlayer = document.getElementById("reward-music");
+                victorySongPlayer.controls = true;
                 let turnSoundResource = document.getElementById("sfx-turn");
                 let ateSoundResource = document.getElementById("sfx-ate");
                 let loseSoundResource = document.getElementById("sfx-lose");

@@ -45,6 +45,10 @@ body {
         transform-origin: top left;
     }
 
+    #win-overlay {
+        font-size: 60px;
+    }
+
     #galleryButton {
         visibility: hidden;
         display: none;
@@ -118,6 +122,10 @@ body {
 @media screen and (max-width: 768px){
     #logo.starter {
         opacity: 1;
+    }
+
+    #win-overlay>img {
+        width: 100vw;
     }
 }
 
