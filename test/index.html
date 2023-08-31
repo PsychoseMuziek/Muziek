@@ -398,7 +398,7 @@
                     ];
                     let win = createCompoundAction(winActions);
                     let checkForWin = createConditionalAction(win, backgroundMusicEnded);
-                    let eatActions = [eatingBonus, audioPlayer(audioMap, ateSfx)];
+                    let eatActions = [eatingBonus, audioPlayerForceStart(audioMap, ateSfx)];
                     let eating = createCompoundAction(eatActions);
                     let ate = ateCheckAction(readState, eating);
                     let turning = turnCheckAction(readState, audioPlayer(audioMap, turnSfx));
