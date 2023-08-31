@@ -129,6 +129,11 @@ body {
     }
 }
 
+.social-media-button>img {
+    max-width: 60px;
+    max-height: 60px;
+}   
+
 .visible {
     opacity: 1;
 }
