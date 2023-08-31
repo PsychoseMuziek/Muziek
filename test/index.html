@@ -58,12 +58,12 @@
                 </div>
                 <button id="right" class="mobile-gamepad-button flex--auto-size">→</button>
             </div>
-            <footer style="bottom: 0; position: fixed; width: 100vw; z-index: -1">
+            <footer id="bottom-content">
                 <a class="social-media-button" href="https://www.instagram.com/wielklemband/">
                     <img src="resource/image/INSTAGRAM_LOGO.png"></a>
-                <a class="social-media-button" href="https://open.spotify.com/artist/3t53v1EzpEVU77pUuEBAdl" style="float:right">
-                    <img src="resource/image/SPOTIFY_LOGO.png"></a>
                 <small id="credits" style="color: white; font-family: 'regular';">Website door <i>Broeder Konijn</i></small>
+                <a class="social-media-button" href="https://open.spotify.com/artist/3t53v1EzpEVU77pUuEBAdl">
+                    <img src="resource/image/SPOTIFY_LOGO.png"></a>
             </footer>
         </div>
         <!-- The menu's/popups -->
@@ -85,8 +85,9 @@
             <button id="retry-button" class="horizontal-centered">Probeer opnieuw</button>
         </div>
         <div id="win-overlay" class="hidden overlay">
-            <h1 class="" style="text-align: center;">Gewonnen!</h1>
-            <img class="horizontal-centered" src="resource/image/TREASURE.png">
+            <br><br>
+            <h1 class="" style="text-align: center;">Je hebt de muziek overwonnen en de schatkist geopend!</h1>
+            <img class="horizontal-centered" src="resource/image/TREASURE.png" style="width: 512px; height: 512px">
             <audio id="reward-music" style="display: block; margin-top: 16px" class="horizontal-centered" preload="auto">
                 <source src="resource/database/kan-niet-ongezien-worden/TREASURE MUSIC.mp3" type="audio/mpeg">
             </audio>

@@ -45,10 +45,6 @@ body {
         transform-origin: top left;
     }
 
-    #win-overlay {
-        font-size: 60px;
-    }
-
     #galleryButton {
         visibility: hidden;
         display: none;
@@ -125,7 +121,8 @@ body {
     }
 
     #win-overlay>img {
-        width: 100vw;
+        max-width: 100vw !important;
+        height: unset !important;
     }
 }
 
@@ -174,6 +171,16 @@ body {
     width: 50vw;
     display: flex;
     align-items: center;
+    z-index: 1;
+}
+
+#bottom-content {
+    bottom: 0; 
+    position: fixed; 
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
 .mobile-gamepad-button {
