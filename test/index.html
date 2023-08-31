@@ -29,14 +29,14 @@
         <script>
             const trackPath = "resource/music/";
             const albumTracks = [
-                "Track 1",
-                "Track 2",
-                "Track 3",
-                "Track 4",
-                "Track 5",
-                "Track 6"
+                "Wielklem - De Laatste Mens",
+                "Wielklem - Finissage",
+                "Wielklem - Hiervoor Kwamen We Niet",
+                "Wielklem - Ik Wil Alles",
+                "Wielklem - Vecht",
+                "Wielklem - Scherven In de Glasbak"
             ];
-            var currentSong = "Track 6"
+            var currentSong = albumTracks[Math.floor(Math.random() * albumTracks.length)];
             const format = ".mp3";
         </script>
         <meta name="author" content="Broeder Konijn">
@@ -58,12 +58,12 @@
                 </div>
                 <button id="right" class="mobile-gamepad-button flex--auto-size">→</button>
             </div>
-            <footer style="bottom: 0; position: fixed; width: 100vw">
+            <footer style="bottom: 0; position: fixed; width: 100vw; z-index: -1">
                 <a class="social-media-button" href="https://www.instagram.com/wielklemband/">
                     <img src="resource/image/INSTAGRAM_LOGO.png"></a>
                 <a class="social-media-button" href="https://open.spotify.com/artist/3t53v1EzpEVU77pUuEBAdl" style="float:right">
                     <img src="resource/image/SPOTIFY_LOGO.png"></a>
-                <small id="credits" style="color: white; font-family: 'regular';">Website: Broeder Konijn</small>
+                <small id="credits" style="color: white; font-family: 'regular';">Website door <i>Broeder Konijn</i></small>
             </footer>
         </div>
         <!-- The menu's/popups -->
@@ -106,11 +106,11 @@
         <img id="health-icon" class="game-resource" src="resource/image/heart.png">
 
         <audio id="wait-loop" class="game-resource" loop preload="auto">
-            <source src="resource/music/test.mp3" type="audio/mpeg">
+            <source src="resource/music/Wielklem - De Digitale Zonderondergang.mp3" type="audio/mpeg">
         </audio>
         <audio id="album-song-background" class="game-resource" preload="auto"></audio>
         <audio id="game-over-loop-music" class="game-resource" loop preload="auto">
-            <source src="resource/music/Game Over Music.mp3" type="audio/mpeg">
+            <source src="resource/music/Wielklem - Psychose.mp3" type="audio/mpeg">
         </audio>
         <audio id="sfx-turn" class="game-resource" preload="auto">
             <source src="resource/sfx/Pok.mp3" type="audio/mpeg">
