@@ -222,6 +222,7 @@
                     keyElement: document, swipeArea: document}
                 
                 let waitLoopResource = document.getElementById("wait-loop");
+                waitLoopResource.volume = 0.6;
                 let albumBackgroundSongPlayer = document.getElementById("album-song-background");
                 albumBackgroundSongPlayer.volume = 0.8;
                 let gameOverSongPlayer = document.getElementById("game-over-loop-music");
@@ -272,6 +273,7 @@
                     let newSong = nextSongTransformation(currentSong);
                     setBackgroundSongSource(trackPath + newSong + format);
                 }
+                newBackgroundSongAction();
                 let startVictoryMusic = audioPlayer(audioMap, winAudio);
     
                 let bootGameButtonElement;
