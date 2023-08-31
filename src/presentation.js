@@ -86,6 +86,33 @@ function createHealthBarColorStep(healthGraphics, getValue, settings) {
     }
 }
 
+function createFoodEmphasisWrapper(display, canvas, getEffect) {
+    return {drawTile: function(x, y, graphics){
+        canvas.save();
+        let effect = getEffect()
+        canvas.shadowBlur = effect.blur;
+        canvas.shadowColor = effect.color;
+        display.drawTile(x, y, graphics);
+        canvas.restore();
+    }
+    };
+
+}
+
+function createFoodVisualEffect(timeFunction, settings) {
+    var elapsedTime = 0;
+    return function() {
+        elapsedTime = elapsedTime + timeFunction();
+        let xValue = elapsedTime / (Math.PI * 51);
+        let factor = Math.sin(xValue);
+        factor = (factor + 1) / 2;
+        let colorInterpolator = d3.interpolateRgb(settings.firstColor, settings.secondColor)
+        let resultColor = colorInterpolator(factor * 0.75);
+        let resultBlur = settings.baseShadowSize * ((factor + 1) * 3);
+        return {blur: resultBlur,color: resultColor};
+    }
+}
+
 function createBottomFitLayout(fitFunction) {
     return function(container, item) {
         let result = fitFunction(container, item);

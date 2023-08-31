@@ -411,7 +411,12 @@
                     let drawBackground = createDirtyLoadDrawImageBackground(boardDrawBridge, backgroundResource);
                     let drawSnake = createDrawSnake(boardDrawBridge, readState, 
                         {head: snakeHeadResource, body: snakeBodyResource});
-                    let drawFood = createDrawFood(boardDrawBridge, readState, foodResource);
+                    let foodEffect = {firstColor: "rgb(250, 247, 69)",
+                     secondColor: "white", baseShadowSize: 5};
+                    let generateFoodVisualEffect = createFoodVisualEffect(getTimeDifference, foodEffect);
+                    let drawFoodWrapper = createFoodEmphasisWrapper(
+                        boardDrawBridge, ctx, generateFoodVisualEffect);
+                    let drawFood = createDrawFood(drawFoodWrapper, readState, foodResource);
                     let boardGraphics = [drawBackground, drawSnake, drawFood];
                     let board = createCompoundAction(boardGraphics);
 
