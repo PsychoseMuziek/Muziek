@@ -25,6 +25,7 @@
         <script src="../src/bridge.js"></script>
         <script src="../src/util.js"></script>
         <script src="../src/controls.js"></script>
+
         <script>
             const trackPath = "resource/music/";
             const albumTracks = [
@@ -43,7 +44,6 @@
     </head>
     <body>
         <div id="noise" style="background-image: url(resource/animation/basic_to_evo.gif);"></div>
-        <!-- TODO top content-->
         <img id="logo" class="starter" src="resource/image/LOGO.png"> 
         <main>
             <canvas id="canvas" tabindex="0" width="320" height="320" class="horizontal-centered hidden"></canvas>
@@ -88,7 +88,6 @@
                 <source src="resource/database/kan-niet-ongezien-worden/TREASURE MUSIC.mp3" type="audio/mpeg">
             </audio>
         </div>
-        
         <div id="start-button" class="mobile-only centered starter ">
             <svg viewBox="0 0 56 56" style="stroke: #F5B42B">
                 <path d="M 27.9999 51.9063 C 41.0546 51.9063 51.9063 41.0781 51.9063 28 C 51.9063 14.9453 41.0312 4.0937 27.9765 4.0937 C 14.8983 4.0937 4.0937 14.9453 4.0937 28 C 4.0937 41.0781 14.9218 51.9063 27.9999 51.9063 Z M 23.7109 37.0469 C 22.6327 37.7031 21.4140 37.1875 21.4140 36.0625 L 21.4140 19.9375 C 21.4140 18.8594 22.7030 18.3906 23.7109 18.9766 L 36.8827 26.7812 C 37.8436 27.3437 37.8671 28.6797 36.8827 29.2656 Z"></path>
@@ -103,7 +102,6 @@
         <img id="goal-icon" class="game-resource" src="resource/image/goal.png">
         <img id="health-icon" class="game-resource" src="resource/image/heart.png">
 
-        
         <audio id="wait-loop" class="game-resource" loop preload="auto">
             <source src="resource/music/test.mp3" type="audio/mpeg">
         </audio>
@@ -131,6 +129,7 @@
     
             var mobileVersion;
             function siteInit() {
+                // Game rules and settings
                 let gameScreenSettings = {
                     minimumTiles: 20,
                     preferredTileSize: 24, //px units
@@ -217,7 +216,7 @@
                 
                 let waitLoopResource = document.getElementById("wait-loop");
                 let albumBackgroundSongPlayer = document.getElementById("album-song-background");
-                albumBackgroundSongPlayer.volume = 0.3;
+                albumBackgroundSongPlayer.volume = 0.8;
                 let gameOverSongPlayer = document.getElementById("game-over-loop-music");
                 gameOverSongPlayer.volume = 0.5;
                 let victorySongPlayer = document.getElementById("reward-music");
@@ -337,6 +336,7 @@
                     bootSequence.push(showExplanation);
                     //bootSequence.push(removeMobileElements);
                    // bootSequence.push(createStartPrompt);
+                   bootSequence.push(fadeLogo);
                     singleUseGameStartEvent = function(action) {
                         attachGroupSelfRemovingAction({domObject: document, event: "keydown"}, action, startGroup);
                     };
@@ -351,8 +351,6 @@
                     let uiHeight = gameUiHeight(screenSize);
                     screenSize.height = screenSize.height - uiHeight;
                     let displaySettings = gameDimensionsInit(screenSize, gameScreenSettings);
-                    console.log(displaySettings.game.width);
-                    console.log(displaySettings.game.height);
                     let uiDisplaySettings = {width: displaySettings.canvas.width, height: uiHeight};
                     let requiredCanvasDimensions = calculateCanvasSize(displaySettings.canvas, uiDisplaySettings);
                     setCanvasSize(canvas, requiredCanvasDimensions.width, requiredCanvasDimensions.height);
@@ -365,6 +363,7 @@
                     let setState = function(value) {
                         state = value;
                     }
+
                     let balancer = createHPBalancer(healthRules, displaySettings.game);
                     let balanceHealthAction = hpWrapper(balancer, backgroundMusicDuration, setHealth);
                     let updateCapacity = hpWrapper(function(value) {return value}, getHealth, setHealthCapacity);
@@ -430,7 +429,6 @@
                         canvasWidth: uiDisplaySettings.width, 
                         canvasHeight: uiDisplaySettings.height,
                         offsetX: 0, offsetY: 0};
-                        
                     let uiDrawBridge = new UiDisplay(ctx, uiDisplayArguments);
                     let drawUiBackground = createDrawUiBackground(uiDrawBridge);
                     let timerGraphics = {icon: goalResource, 
@@ -480,12 +478,8 @@
                         drawHealth
                     ];
                     let ui = createCompoundAction(uiGraphics);
-                    let frameDraw = function() {
-                        frameStart();
-                        ui();
-                        board();
-                    };
-                    //gameLogicStep.push(frameDraw);
+                    let frameSteps = [frameStart, ui, board];
+                    let frameDraw = createCompoundAction(frameSteps);
                     gameLogicStep.push(frameStart);
                     gameLogicStep.push(frameDraw);
                     let nextFrameActions = gameLogicStep;
@@ -509,8 +503,6 @@
                         gameStartingUpAction();
                         bootstrapper();
                     }
-                    // TODO attach start sound
-    
                     // attaches everything for game start to a start trigger
                     singleUseGameStartEvent(gameStarts);
     

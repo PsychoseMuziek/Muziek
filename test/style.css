@@ -190,6 +190,10 @@ body {
   z-index: -5;
 }
 
+#credits:hover {
+    cursor: pointer;
+}
+
 .flex-container--column {
     display: flex;
     flex-direction: column;
