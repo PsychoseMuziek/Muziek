@@ -15,6 +15,7 @@
         <meta property="og:description" content="Speel het spel om de bonus track te luisteren"/>
         <meta property="og:image" content="https://wielklemband.github.io/delaatstemens/resource/image/EMBED_LOGO.png" />
 
+        <link rel="stylesheet" type="text/css" href="fonts.css"/>
         <link rel="stylesheet" type="text/css" href="style.css"/>
         <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
         <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -57,6 +58,10 @@
                 </div>
                 <button id="right" class="mobile-gamepad-button flex--auto-size">→</button>
             </div>
+            <footer style="bottom: 0; position: fixed">
+                
+                <small id="credits" style="color: white; font-family: 'regular';">Website: Broeder Konijn</small>
+            </footer>
         </div>
         <!-- The menu's/popups -->
         <div id="explanation-overlay" class="hidden">
@@ -187,6 +192,7 @@
                 let startButton = document.getElementById("start-button");
                 let retryButton = document.getElementById("retry-button");
                 let logoButton = document.getElementById("logo");
+                let creditsButton = document.getElementById("credits");
     
                 let snakeHeadResource = document.getElementById("snake-head");
                 let snakeBodyResource = document.getElementById("snake-body");
@@ -335,7 +341,9 @@
                         attachGroupSelfRemovingAction({domObject: document, event: "keydown"}, action, startGroup);
                     };
                 }           
-    
+                creditsButton.onclick = function() {
+                        window.location = "https://www.github.com/elwinbran"
+                    }
                 let setupGame = function() {
                     let calculatedScreenHeight  = windowHeight - calculateReservedHeight();
                     let screenSize = {width: windowWidth, 
