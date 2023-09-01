@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html lang="nl">
     <head>
-        <title>Bonus!</title>
+        <title>Wielklem</title>
         <link rel="icon" type="image/x-icon" href="favicon.ico">
         <meta charset="UTF-8">
         <meta name="description" content="Speel het spel om de bonus track te luisteren">
@@ -133,8 +133,6 @@
         </audio>
     
         <script>
-            var debug;
-            var debug2;
             var mobileVersion;
             function siteInit() {
                 // Game rules and settings
@@ -227,7 +225,6 @@
                 waitLoopResource.volume = 0.6;
                 let albumBackgroundSongPlayer = document.getElementById("album-song-background");
                 albumBackgroundSongPlayer.volume = 0.8;
-                //albumBackgroundSongPlayer.oncanplay
                 let gameOverSongPlayer = document.getElementById("game-over-loop-music");
                 gameOverSongPlayer.volume = 0.5;
                 let victorySongPlayer = document.getElementById("reward-music");
@@ -237,7 +234,6 @@
                 let loseSoundResource = document.getElementById("sfx-lose");
                 let startSoundResource = document.getElementById("sfx-start");
                 let winSoundResource = document.getElementById("sfx-win");
-                // OPTIONAL simplify
                 const waitLoopAudio = "345"; // nonsense strings that are unique
                 const gameOverAudio = "ho una psicosi";
                 const backgroundAudio = "TOYUT";
@@ -310,8 +306,6 @@
                 }
                 let hideLogo = function() {
                     logoButton.classList.add("hidden");
-                    //OPTIONAL: animation to make it overlay the image
-                    // only then show explanation
                 }
                 let bootSequence = [startWaitingLoopMusic, showCanvas, hideLogo];
                 const startGroup = "asdkjf";
@@ -328,8 +322,6 @@
                     };
                     mobileVersion = true;
                     bootGameButtonElement = startButton;
-                    // attach start button animation to dissapear
-                    //bootSequence.push(fadeIn);
                     bootSequence.push(showExplanation);
                     bootSequence.push(hideStartButton);
                     bootSequence.push(showMobileGamepad);
@@ -349,11 +341,7 @@
                         logoButton.classList.add("invisible");
                     };
                     bootGameButtonElement = logoButton;
-                    //bootSequence.push(fadeIn);
                     bootSequence.push(showExplanation);
-                    //bootSequence.push(removeMobileElements);
-                   // bootSequence.push(createStartPrompt);
-                   //TODO, fade?
                    bootSequence.push(fadeLogo);
                     singleUseGameStartEvent = function(action) {
                         attachGroupSelfRemovingAction({domObject: document, event: "keydown"}, action, startGroup);
@@ -385,9 +373,7 @@
                     let balancer = createHPBalancer(healthRules, displaySettings.game);
                     let balanceHealthAction = hpWrapper(balancer, backgroundMusicDuration, setHealth);
                     let updateCapacity = hpWrapper(function(value) {return value}, getHealth, setHealthCapacity);
-                    // todo?
                     attachControls(controls, readState, setState);
-                    // attach advanced controls as well?
                     let resetAction = createGameResetter(setState, logic);
                     let mainStep = createGameUpdater(setState, readState, logic);
                     let starve = createHpLoss(getHealth, setHealth, healthRules.hpLossPerSecond);
@@ -416,7 +402,6 @@
                         msDelayParallelAction(startVictoryMusic, 300)
                     ];
                     let win = createCompoundAction(winActions);
-                    debug = win;
                     let checkForWin = createConditionalAction(win, backgroundMusicEnded);
                     let eatActions = [eatingBonus, audioPlayerForceStart(audioMap, ateSfx)];
                     let eating = createCompoundAction(eatActions);
