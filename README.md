@@ -6,4 +6,5 @@ The bonus material is a webgame (playable on all devices) and track exclusively 
 With the release of the album and website, the project has reached a low/no maintainance state. 
 Code is free to use, all files in the resource folder requires explicit permission from the Wielklem organization. 
 
+Credit to Talha Eroglu (https://github.com/tlhaeroglu) for allowing the modification of their HTML5 Snake Game that served as the basis of this projevt.
 Credit to favicon.io (https://favicon.io/favicon-converter/) for the favicon conversion.
